@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulator QUIZ Yuk Latsol 21</title>
+  <style>
+    :root {
+      --bg1: #fff7ed;
+      --bg2: #eff6ff;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #f97316;
+      --primary-2: #ea580c;
+      --secondary: #0ea5e9;
+      --secondary-2: #0284c7;
+      --back-1: #64748b;
+      --back-2: #475569;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #ef4444;
+      --explain-bg: #fef3c7;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #fde68a 0%, transparent 28%),
+        radial-gradient(circle at top right, #bfdbfe 0%, transparent 30%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 24px auto;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+    }
+
+    .home {
+      text-align: center;
+      padding: 90px 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f97316, #fb7185);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 38px;
+      line-height: 1.2;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 18px;
+      margin-bottom: 28px;
+    }
+
+    .go-btn,
+    .next-btn,
+    .restart-btn,
+    .back-btn {
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 14px 26px;
+      font-size: 18px;
+      font-weight: 700;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .go-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 12px 28px rgba(249, 115, 22, 0.35);
+    }
+
+    .next-btn,
+    .restart-btn {
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-2));
+      box-shadow: 0 12px 28px rgba(14, 165, 233, 0.28);
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, var(--back-1), var(--back-2));
+      box-shadow: 0 12px 28px rgba(71, 85, 105, 0.28);
+    }
+
+    .go-btn:hover,
+    .next-btn:hover,
+    .restart-btn:hover,
+    .back-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meta-chip {
+      background: linear-gradient(135deg, #fff7ed, #ffedd5);
+      border: 1px solid #fdba74;
+      padding: 8px 14px;
+      border-radius: 999px;
+    }
+
+    #question {
+      font-size: 24px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .options label {
+      display: block;
+      padding: 16px 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 16px;
+      cursor: pointer;
+      background: white;
+      transition: all 0.18s ease;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .options label:hover {
+      border-color: #7dd3fc;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(14, 165, 233, 0.1);
+    }
+
+    .options input {
+      margin-right: 10px;
+      transform: scale(1.1);
+      accent-color: var(--secondary);
+    }
+
+    .correct {
+      background: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+    }
+
+    .wrong {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+    }
+
+    .explain {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: var(--explain-bg);
+      border-left: 6px solid #f59e0b;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .result {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .result-box {
+      background: linear-gradient(135deg, #eff6ff, #fdf2f8);
+      border: 1px solid #c4b5fd;
+      border-radius: 22px;
+      padding: 28px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .score-number {
+      font-size: 44px;
+      font-weight: 800;
+      margin: 14px 0;
+      color: #7c3aed;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .container {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .home {
+        padding: 60px 14px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      #question {
+        font-size: 20px;
+      }
+
+      .go-btn,
+      .next-btn,
+      .restart-btn,
+      .back-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="home" class="container home">
+    <div class="badge">Simulator Quiz</div>
+    <h1>Asterion 22</h1>
+    <div class="subtitle">2022 · Urinary System</div>
+    <button class="go-btn" type="button" id="startBtn">START CBT</button>
+  </div>
+
+  <div id="quizContainer" class="container" style="display:none;">
+    <div class="meta">
+      <div id="meta" class="meta-chip"></div>
+      <div id="scoreInfo" class="meta-chip"></div>
+      <div id="timerInfo" class="meta-chip"></div>
+    </div>
+
+    <h3 id="question"></h3>
+    <div id="options" class="options"></div>
+    <div id="explain" class="explain" style="display:none;"></div>
+
+    <div class="actions">
+      <button class="back-btn" type="button" id="backBtn">Back</button>
+      <button class="next-btn" type="button" id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+  {
+    q: "1. Pria 45 tahun nyeri pinggang kiri mendadak menjalar ke pangkal paha + mual muntah. Diagnosis banding paling sesuai?",
+    options: [
+      "a. Pielonefritis akut",
+      "b. Radikulitis herpes zoster",
+      "c. Kehamilan ektopik",
+      "d. Kolik bilier",
+      "e. Batu ureter"
+    ],
+    answer: 4,
+    explain: "Kolik ureter khas: nyeri flank mendadak menjalar ke inguinal/pangkal paha, gelisah, disertai mual/muntah."
+  },
+  {
+    q: "2. Pernyataan tentang vesica urinaria yang benar:",
+    options: [
+      "a. Urethra keluar dari dinding posteriornya",
+      "b. Terletak subperitoneal",
+      "c. Kedua ureter bermuara di bagian superiornya",
+      "d. Seluruh bagiannya diliputi peritoneum",
+      "e. Dindingnya terdiri dari otot bergaris"
+    ],
+    answer: 1,
+    explain: "Vesica urinaria terutama bersifat ekstraperitoneal/subperitoneal; peritoneum hanya menutupi permukaan superiornya."
+  },
+  {
+    q: "6. Perbedaan proximal vs distal tubule yang benar:",
+    options: [
+      "a. Sitoplasma sel pada proximal tubule lebih pucat daripada distal tubule",
+      "b. Mikrovili proximal tubule lebih pendek daripada distal tubule",
+      "c. Lumen distal tubule lebih besar daripada proximal tubule",
+      "d. Distal tubule lebih panjang daripada proximal tubule",
+      "e. Macula densa merupakan bagian dari proximal tubule, sedangkan distal tubule tidak"
+    ],
+    answer: 2,
+    explain: "Distal tubule tidak punya brush border → lumen tampak lebih lebar/jelas dibanding proximal tubule."
+  },
+  {
+    q: "7. Seorang wanita usia 25 tahun didiagnosis SLE sejak 5 tahun lalu. Beberapa hari ini, kedua kelopak mata dan ekstremitasnya bengkak akibat edema. Test urinalisis menunjukkan proteinuria, tanpa hematuria maupun bacteriuria. Selanjutnya dilakukan biopsi ginjal dengan gambaran penebalan membran basal glomerulus. Mekanisme yang mendasari terjadinya lesi glomerulus pada kasus ini?  ",
+    options: [
+      "a. Cell mediated injury",
+      "b. Podocytopathy",
+      "c. Complement alternative pathway",
+      "d. Maladaptive changes",
+      "e. Antibody mediated injury"
+    ],
+    answer: 4,
+    explain: "Gambaran penebalan GBM konsisten dengan deposisi kompleks imun (antibody/immune-complex mediated)."
+  },
+  {
+    q: "8. Seorang laki-laki 40 tahun dirujuk dari Puskesmas dengan keluhan nyeri pinggang kiri sejak 1 bulan. Dia memiliki riwayat keluar batu 2 tahun yang lalu. Pada pemeriksaan urin terdapat leukosit, eritrosit dan bakteri. Batu saluran kemih yang dikonfirmasi dengan BOF dan USG, Lokasi Batu:  ",
+    options: [
+      "a. Batu calyx: dapat menyebabkan ketidaknyamanan panggul, infeksi berulang dan tidak memerlukan pengobatan",
+      "b. Batu ureter dapat lewat dengan lancar di UPJ, pinggir panggul, dan UVJ",
+      "c. Batu ginjal panggul: tidak cenderung menyebabkan gangguan drainase ginjal",
+      "d. Batu ginjal panggul: cenderung menyebabkan obstruksi UPJ/pelvis ginjal dan kaliks",
+      "e. Batu ureter dengan diameter < 5 mm memerlukan intervensi bedah"
+    ],
+    answer: 3,
+    explain: "Batu di pelvis ginjal dapat mengganggu aliran keluar (UPJ) dan menimbulkan obstruksi/hidronefrosis."
+  },
+  {
+    q: "10. Apakah yang membedakan struktur afferent dan efferent arteriole pada renal corpuscle? ",
+    options: [
+      "a. Besar lumen (Large lumen)",
+      "b. Basal lamina",
+      "c. Diameter luar (Outer diameter)",
+      "d. Jaringan ikat (Connective tissue)",
+      "e. Jenis epitel (Epithelium)"
+    ],
+    answer: 0,
+    explain: "Arteriol aferen berdiameter/lumen lebih besar daripada eferen sehingga tekanan filtrasi glomerulus terjaga."
+  },
+  {
+    q: "12. Seorang pria 40 tahun berat badan 80kg mengeluh tidak ada kencing sejak kemarin. Penderita mengalami diare hebat sejak 2 hari yang lalu. Pada pemeriksaan didapatkan penderita tampak sangat dehidrasi tekanan darah 95/70 mmHg, nadi 112/menit. Kreatinin plasma 3,5 mg/dl (sebelumnya 1 mg/dl), produksi urine sejak 14 jam lalu 80 ml. Dari pemeriksaan fisik lain didapatkan tanda-tanda edema paru. Kasus di atas dapat dikatagorikan?",
+    options: [
+      "a. Acute Tubular Necrosis",
+      "b. AKI prerenal class I",
+      "c. AKI prerenal class III",
+      "d. AKI prerenal class II",
+      "e. Established renal failure"
+    ],
+    answer: 2,
+    explain: "Kenaikan kreatinin ≥3× baseline sesuai derajat berat (setara stage/class III pada skema staging AKI)."
+  },
+  {
+    q: "13. Pada infeksi saluran kemih (ISK) dijumpai:",
+    options: [
+      "a. Pada pasien dengan batu saluran kemih lebih sering terjadi ISK tanpa komplikasi",
+      "b. Bakteriuri bermakna bila koloni kuman 10.000 CFU",
+      "c. Jarang bila sudah terjadi penyakit ginjal kronik",
+      "d. Penyebab terutama mikroorganisme dengan penyebaran ascending",
+      "e. Kasus lebih tinggi pada pria"
+    ],
+    answer: 3,
+    explain: "ISK tersering berasal dari ascending infection (naik dari uretra ke buli/atas)."
+  },
+  {
+    q: "14. Seorang wanita umur 55 tahun mengeluh demam dan nyeri flank kiri berulang sejak sebulan terakhir. Pada pemeriksaan fisik, didapatkan temperature 37,50C, nadi 84x/menit, RR 16x/menit, tensi 130/80 mmHg. Urinalisis menunjukkan leukosituria dan bacteriuria, tanpa proteinuria, glucosuria maupun ketonuria. Pasien ini diduga mengalami inflamasi kronik kibat infeksi bakteri pada jaringan ginjal. Gambaran histopatologik ginjal manakah berikut ini yang mendukung dugaan tersebut? ",
+    options: [
+      "a. Proliferasi endokapiler glomeruli",
+      "b. Nekrosis epitel tubuli",
+      "c. Hyaline cast pada lumen tubuli",
+      "d. Infiltrat eosinophil pada interstisial",
+      "e. Hyalinosis arteriol"
+    ],
+    answer: 2,
+    explain: "Pyelonefritis kronik: tubulus atrofi + cast (sering ‘thyroidization’/cast eosinofilik)."
+  },
+  {
+    q: "15. Ginjal mempunyai fungsi ekskresi dan fungsi endokrin. Dibawah ini yang termasuk fungsi endokrin adalah",
+    options: [
+      "a. Mengatur osmolaritas urin",
+      "b. Reabsorpsi glukosa",
+      "c. Mengatur kadar natrium urin",
+      "d. Mengatur tekanan darah",
+      "e. Filtrasi cairan"
+    ],
+    answer: 3,
+    explain: "Ginjal berperan endokrin lewat renin-angiotensin (juga EPO & aktivasi vitamin D); terkait regulasi tekanan darah."
+  },
+  {
+    q: "16. Alfa bloker bekerja dengan cara:",
+    options: [
+      "a. Menghambat perubahan testosteron menjadi dihidrotestosteron",
+      "b. Mencegah stress dan urge inkontinensia",
+      "c. Menurunkan proses inflamasi pada prostat",
+      "d. Menghambat reseptor alfa di leher buli dan prostat",
+      "e. Menurunkan kontraksi otot detrusor"
+    ],
+    answer: 3,
+    explain: "Alpha-1 blocker merelaksasi otot polos leher buli & prostat → memperbaiki LUTS/BPH."
+  },
+  {
+    q: "17. Bagaimana mekanisme Mikroorganism menyebabkan terjadinya batu saluran kemih dan enkrustasi pada indwelling kateter:",
+    options: [
+      "a. Membentuk biofilm",
+      "b. Meningkatkan calcium pada urine",
+      "c. Membuat suasana urine menjadi asam",
+      "d. Menginduksi exfoliasi urothelial berlebihan",
+      "e. Menghasilkan urease"
+    ],
+    answer: 4,
+    explain: "Bakteri urease (+) memecah urea → urin jadi alkalis → presipitasi struvit & enkrustasi."
+  },
+  {
+    q: "18. Kristal yang ditemukan pada urine asam:",
+    options: [
+      "a. Amonium biurat",
+      "b. Kalsium fosfat",
+      "c. Triple phosphate",
+      "d. Kalsium oksalat",
+      "e. Kalsium karbonat"
+    ],
+    answer: 3,
+    explain: "Kalsium oksalat dapat ditemukan pada berbagai pH, termasuk urine asam."
+  },
+  {
+    q: "20. Seorang perempuan berusia 50 tahun suku Bali, datang ke poliklinik dengan sering mengalami mual-mual sejak 2 minggu yang lalu. Penderita mengaku mengalami penyakit kencing manis sejak 6 tahun yang lalu dan berobat tidak teratur dan tekanan darah tinggi diketahui sejak 3 tahun yang lalu. Pada pemeriksaan fisik ditemukan TD 150/100 mmHg, suhu 36,50 C, respirasi 16X/menit. Dari pemeriksaan laboratorium kadar kreatinin serum 1,8 mg/dl; Darah lengkap, HB 10,5 dan urin lengkap terdapat protein +3, maka pemeriksaan utama dan segera dilakukan adalah:",
+    options: [
+      "a. Kadar besi serum",
+      "b. Kadar ferritin serum",
+      "c. Albuminuria kuantitatif",
+      "d. Foto ronsen polos abdomen",
+      "e. Foto ronsen toraks"
+    ],
+    answer: 2,
+    explain: "Screening/penilaian nefropati diabetik: kuantifikasi albuminuria (mis. ACR)."
+  },
+  {
+    q: "21. Glukosa direabsorpsi bersama dengan Na+ dari lumen tubulus ke dalam sel tubulus proksimal. Proses ini disebut dengan  :",
+    options: [
+      "a. Transport pasif",
+      "b. Transport aktif",
+      "c. Transport aktif sekunder",
+      "d. Facilitated diffusion carrier",
+      "e. Transport aktif primer"
+    ],
+    answer: 2,
+    explain: "Kotranspor SGLT bergantung gradien Na+ (dibuat oleh Na/K-ATPase) → transport aktif sekunder."
+  },
+  {
+    q: "22. P Seorang pria 45 tahun datang ke unit gawat darurat dengan riwayat 1 jam tiba-tiba nyeri pinggang sisi kiri menjalar ke bawah menuju pangkal pahanya. Pasien mengeluh kesakitan, yang tidak berkurang dengan posisi. Ia juga mengeluh mual dan muntah. Penatalaksanaan Paling Akut pada pria 45 tahun dengan nyeri pinggang pada kasus ini:",
+    options: [
+      "a. Analgesik, antiemetik, antibiotik dan cairan intra vena",
+      "b. Drainase urin dengan stent ureter untuk pengobatan definitif",
+      "c. Masuk RS jika nyeri persisten tidak terkontrol dengan analgesik oral",
+      "d. Kombinasikan nefrostomi perkutan dengan stent ureter untuk drainase urin",
+      "e. Kolik ginjal, urolitiasis dan demam yang tidak darurat untuk drainase"
+    ],
+    answer: 0,
+    explain: "Tatalaksana awal: kontrol nyeri + antiemetik + hidrasi sesuai kebutuhan; drainase segera bila ada obstruksi terinfeksi/komplikasi."
+  },
+  {
+    q: "23. Tatalaksana terbaik pada prostatitis bakteri akut:",
+    options: [
+      "a. Anti inflamasi",
+      "b. Alfa bloker",
+      "c. Glycosaminoglycans",
+      "d. Inhibitor 5 alfa reductase",
+      "e. Antibiotika"
+    ],
+    answer: 4,
+    explain: "Prostatitis bakteri akut memerlukan antibiotik (tambahan analgesik/supportif bila perlu)."
+  },
+  {
+    q: "24.  Seorang anak laki-laki umur 8 tahun datang ke poliklinik dengan keluhan kencing merah seperti air cucian daging sejak 3 hari yang lalu. 2 minggu sebelumnya pasien dikeluhkan panas 2 hari, batuk disertai nyeri tenggorokan dan menghilang setelah berobat ke dokter umum. Pada pemeriksaan fisik didapatkan: Tekanan darah: 160/95, Nadi 100x/ menit, Respirasi: 28 x/ menit. Pada urinalisis: specific gravity: 1,020, pH: 6,5, protein +2, nitrit (-) darah : 398/hpf. ASTO : 400.Apa kemungkinan diagnosis pasien tersebu",
+    options: [
+      "a. Rapidly Progressive Glomerulonephritis",
+      "b. Sindrom nefrotik",
+      "c. IgA nefropati",
+      "d. Glomerulonefritis pasca streptokokus",
+      "e. Sindrom hemolitik uremik"
+    ],
+    answer: 3,
+    explain: "Post-strep GN: 1–3 minggu setelah infeksi streptokokus, hematuria + hipertensi, ASTO meningkat."
+  },
+  {
+    q: "25. Lokasi tersering batu ureter menggantung:",
+    options: [
+      "a. Batu kaliks ginjal > 5 mm tidak memerlukan intervensi",
+      "b. UPJ dan UVJ merupakan tempat tersering batu ureter tersangkut",
+      "c. Batu ureter < 5 mm memerlukan intervensi bedah",
+      "d. Batu pelvis ginjal + hidronefrosis tidak memerlukan intervensi",
+      "e. Batu pelvis ginjal + hidronefrosis tidak cenderung mengganggu drainase"
+    ],
+    answer: 1,
+    explain: "Penyempitan fisiologis ureter: UPJ dan UVJ (juga pelvic brim) → lokasi batu sering tersangkut."
+  },
+  {
+    q: "30. Seorang laki-laki usia 40 tahun dibawa ke UGD RS karena mengalami sesak nafas sejak 4 jam yang lalu. Pasien juga mengalami bengkak pada kaki dan perut sejak 5 hari yang lalu. Pasien memiliki riwayat penyakit ginjal kronis sejak 6 bulan lalu. Dokter memutuskan untuk memberikan furosemide. Bila digunakan terus-menerus, furosemide dapat menimbulkan efek:  ",
+    options: [
+      "a. Hipertensi",
+      "b. Hipernatremia",
+      "c. Hipermagnesemia",
+      "d. Asidosis metabolik",
+      "e. Hipokalemia"
+    ],
+    answer: 4,
+    explain: "Loop diuretic meningkatkan ekskresi K+ → hipokalemia (juga risiko alkalosis metabolik)."
+  },
+  {
+    q: "32. Istilah medis lain untuk undescensus testis, kecuali:",
+    options: [
+      "a. Hidrokel testikularis",
+      "b. Undescended testis",
+      "c. Kriptorkidism",
+      "d. Kriptorkismus",
+      "e. UDT"
+    ],
+    answer: 0,
+    explain: "Hidrokel berbeda dengan undescended testis/kriptorkismus."
+  },
+  {
+    q: "34.  Seorang wanita usia 25 tahun mengeluh nyeri saat berkemih sejak 1 hari sebelum ke klinik. Dokter pemeriksa menyarankan untuk dilakukan pemeriksaan kultur urin. Berikut adalah cara penyimpanan spesimen urin yang benar bila tidak dapat diantar segera ke laboratorium mikrobiologi klinik :",
+    options: [
+      "a. 25°C",
+      "b. 4°C",
+      "c. 37°C",
+      "d. -80°C",
+      "e. -20°C"
+    ],
+    answer: 1,
+    explain: "Refrigerasi 4°C memperlambat pertumbuhan bakteri sehingga hasil kultur lebih akurat."
+  },
+  {
+    q: "36. Seorang pasien laki-laki usia 40 tahun dengan riwayat gagal ginjal kronis stadium 4 memerlukan pengobatan antihipertensi. Tipe drug-induced kidney disease manakah yang mungkin terjadi akibat penggunaan ACEI?",
+    options: [
+      "a. Post-renal",
+      "b. Pre-renal",
+      "c. Intrinsic renal",
+      "d. Tubulointerstitial nephritis",
+      "e. Glomerulonephritis"
+    ],
+    answer: 1,
+    explain: "ACEI menyebabkan dilatasi arteriol eferen → menurunkan GFR (terutama pada stenosis arteri renalis/hipovolemia) → fungsional ‘pre-renal’."
+  },
+  {
+    q: "37. Seorang pasien usia 45 tahun datang ke unit gawat darurat dengan sesak dan bengkak di kaki sejak tiga hari yang lalu. Pasien juga mengalami proteinuria. Proses farmakokinetika manakah dari obat yang dapat dipengaruhi oleh penurunan kadar protein dalam serum?  ",
+    options: [
+      "a. Metabolisme",
+      "b. Interaksi reseptor",
+      "c. Ekskresi",
+      "d. Distribusi",
+      "e. Absorpsi"
+    ],
+    answer: 3,
+    explain: "Protein binding turun → fraksi bebas naik → perubahan distribusi (dan efek/toksisitas)."
+  },
+  {
+    q: "38. Pada metabolic acidosis, dalam nephron terjadi:",
+    options: [
+      "a. Peningkatan filtrasi bikarbonat di glomerulus",
+      "b. Peningkatan rasio bikarbonat–H+ dalam cairan tubulus",
+      "c. Penurunan filtrasi bikarbonat di glomerulus",
+      "d. Penurunan sekresi H+ ke cairan tubulus",
+      "e. Peningkatan reabsorpsi bikarbonat di bagian tipis loop Henle"
+    ],
+    answer: 4,
+    explain: "Metabolic acidosis memicu peningkatan reabsorpsi/regenerasi HCO3− dan peningkatan sekresi H+ (opsi yang paling mendekati adalah peningkatan reabsorpsi bikarbonat)."
+  },
+  {
+    q: "41.  Seorang pria 45 tahun datang ke unit gawat darurat dengan riwayat 1 jam tiba-tiba nyeri pinggang sisi kiri menjalar ke bawah menuju pangkal pahanya. Pasien mengeluh kesakitan, yang tidak berkurang dengan posisi. Ia juga mengeluh mual dan muntah. Pemeriksaan penunjang pada laki-laki 45 tahun dengan keluhan nyeri pinggang mendadak pada kasus ini:  ",
+    options: [
+      "a. CT non-kontras tidak dapat membedakan batu radiolusen dari jaringan lunak",
+      "b. USG perut menunjukkan batu ureter dengan baik",
+      "c. pH urin > 5,5 mungkin ISK oleh pemecah ureum dengan batu struvit",
+      "d. Hematuria mikroskopis pada urinalisis mayoritas pada pasien kolik ginjal",
+      "e. Foto rontgen KUB dapat membedakan fungsi ginjal baik dan buruk"
+    ],
+    answer: 3,
+    explain: "Sebagian besar kolik ginjal disertai hematuria mikroskopis pada urinalisis."
+  },
+  {
+    q: "45. Keuntungan pemeriksaan intravenous pyelography (IVP):",
+    options: [
+      "a. Non invasif",
+      "b. Dapat menilai fungsi dan anatomi traktus urinarius",
+      "c. Tidak mempunyai efek samping",
+      "d. Biaya murah",
+      "e. Tidak perlu persiapan khusus"
+    ],
+    answer: 1,
+    explain: "IVP menilai anatomi sekaligus fungsi ekskresi (opasifikasi sistem pielokaliks/ureter)."
+  },
+  {
+    q: "46. Yang tidak termasuk faktor risiko undescensus testis:",
+    options: [
+      "a. Riwayat keluarga UDT",
+      "b. Kelahiran prematur",
+      "c. Obesitas pada ibu hamil",
+      "d. Paparan vitamin D pada ibu hamil",
+      "e. Kelainan genetik"
+    ],
+    answer: 3,
+    explain: "Paparan vitamin D bukan faktor risiko klasik UDT; prematuritas, faktor genetik, dan riwayat keluarga termasuk risiko."
+  },
+  {
+    q: "48. Seorang pria muda mengajak teman ceweknya yang mengeluhkan nyeri saat kencing. Setelah anamnesis dan prosedur pemeriksaan dilakukan dokter menyimpulkan sebagai “honeymoon cystitis”. Sistem urinaria terdiri dari: 1. Urethra, 2. Ureter, 3. vesica urinaris, 4. Ginjal. Urutan struktur yang dilewati adalah sebagai berikut:  ",
+    options: [
+      "a. 4-2-3-1",
+      "b. 1-3-4-2",
+      "c. 1-2-3-4",
+      "d. 4-3-2-1",
+      "e. 1-2-4-3"
+    ],
+    answer: 0,
+    explain: "Alur urine: ginjal → ureter → vesika urinaria → uretra."
+  },
+  {
+    q: "51.  Laki-laki 70 tahun di pelayanan kesehatan primer dengan massa panggul kiri sejak 2 tahun. Dia memiliki riwayat nyeri pinggang, hematuria, dan eritrosituria dalam urinalisis. Pemeriksaan non invasif untuk menegakkan diagnosis akhir tumor ginjal pada orang dewasa  ",
+    options: [
+      "a. Riwayat keluarga VHL",
+      "b. Trias klasik (hematuria, nyeri pinggang, massa)",
+      "c. CT scan abdomen-pelvis tanpa dan dengan kontras",
+      "d. Sindrom Staufer",
+      "e. Faktor risiko (merokok, kadmium, industri kulit)"
+    ],
+    answer: 2,
+    explain: "Modalitas utama karakterisasi massa ginjal: CT multiphase (tanpa & dengan kontras)."
+  },
+  {
+    q: "52. Sampel urine yang paling baik digunakan pemeriksaan urinalisis adalah sampel urine pertama di pagi hari. Berikut ini merupakan sifat urine pertama di pagi hari :",
+    options: [
+      "a. Volume seragam",
+      "b. pH tinggi",
+      "c. Osmolaritas seragam",
+      "d. Lebih encer",
+      "e. Lebih steril"
+    ],
+    answer: 4,
+    explain: "Urine pagi lebih terkonsentrasi dan relatif lebih sedikit terkontaminasi dibanding sampel lain (pilihan terbaik dari opsi yang ada)."
+  },
+  {
+    q: "53.  Seorang pasien usia 45 tahun didiagnosis menderita penyakit ginjal kronis. Penggunaan obat manakah yang memerlukan penyesuaian dosis pada pasien tersebut?",
+    options: [
+      "a. Obat dengan metabolit inaktif",
+      "b. Obat eliminasi ginjal <30%",
+      "c. Obat dengan batas keamanan lebar",
+      "d. Obat eliminasi terutama lewat hepar",
+      "e. Obat nefrotoksik"
+    ],
+    answer: 4,
+    explain: "Pada CKD, obat nefrotoksik perlu penyesuaian/diwaspadai (sering dihindari atau dipilih alternatif) untuk mencegah perburukan fungsi ginjal."
+  },
+  {
+    q: "54.  Seorang laki-laki 40 tahun dirujuk dari Puskesmas dengan keluhan nyeri pinggang kiri sejak 1 bulan. Dia memiliki riwayat keluar batu 2 tahun yang lalu. Pada pemeriksaan urin terdapat leukosit, eritrosit dan bakteri. Penatalaksanaan akut laki-laki 40 tahun dengan nyeri pinggang pada kasus ini :",
+    options: [
+      "a. Medis: analgesik, antiemetik, dan antibiotik",
+      "b. Bedah: stent ureter untuk pengobatan definitif",
+      "c. NSAID meningkatkan tekanan intra-ureteral, dan cairan IV",
+      "d. Kombinasikan nefrostomi perkutan + stent ureter untuk drainase",
+      "e. Indikasi rawat inap: nyeri persisten berat tak terkontrol analgesik oral"
+    ],
+    answer: 0,
+    explain: "Dengan tanda infeksi pada urin, terapi akut mencakup analgesik/antiemetik dan antibiotik (drainase bila obstruksi + sepsis/komplikasi)."
+  },
+  {
+    q: "55. Mikroorganisme penyebab batu saluran kemih & enkrustasi kateter:",
+    options: [
+      "a. Staphylococcus coagulase-negative",
+      "b. Yeast",
+      "c. Enterococci",
+      "d. Escherichia coli",
+      "e. Proteus mirabilis"
+    ],
+    answer: 4,
+    explain: "Proteus mirabilis urease (+) → urin alkalis → batu struvit/enkrustasi."
+  },
+  {
+    q: "59. Palpable undescensus testis dapat ditemukan pada kondisi berikut, kecuali:",
+    options: [
+      "a. Testis skrotalis letak tinggi",
+      "b. Testis ektopik",
+      "c. Testis intraabdomen",
+      "d. Testis retraktil",
+      "e. Testis inguinal"
+    ],
+    answer: 2,
+    explain: "Testis intraabdomen umumnya tidak teraba pada pemeriksaan fisik."
+  },
+  {
+    q: "61. JApabila kondisi shock terus berlangsung patofisiologi yang dapat terjadi pada ginjal yang tidak mendapatkan perfusi yang adekuat adalah? ",
+    options: [
+      "a. Nefrotoksik oleh toksin kuman penyebab diare",
+      "b. Obstruksi tubuli intrarenal",
+      "c. Gangguan elektrolit dan asam-basa",
+      "d. Berkurangnya renal blood flow",
+      "e. Acute tubular necrosis"
+    ],
+    answer: 4,
+    explain: "Iskemia berkepanjangan pada ginjal → cedera tubulus → acute tubular necrosis."
+  },
+  {
+    q: "63. Seorang pria 45 tahun datang ke unit gawat darurat dengan riwayat 1 jam tiba-tiba nyeri pinggang sisi kiri menjalar ke bawah menuju pangkal pahanya. Pasien mengeluh kesakitan, yang tidak berkurang dengan posisi. Ia juga mengeluh mual dan muntah. Penatalaksanaan Paling Pilihan, jika kasus ini dipastikan batu ginjal/ureter  :",
+    options: [
+      "a. Konservatif bila batu ureter <5 mm dan komplikasi ISK",
+      "b. Nefrolitotomi terbuka bila batu ginjal <2,5 cm",
+      "c. ESWL bila batu sistin ginjal >2,5 cm",
+      "d. Ureteroskopi bila batu ginjal <1,5 cm",
+      "e. Nefrolitotomi perkutan bila batu pelvis ginjal >2,5 cm"
+    ],
+    answer: 4,
+    explain: "Batu ginjal besar (≈>2 cm, apalagi >2,5 cm) paling sesuai ditangani dengan PCNL."
+  },
+  {
+    q: "65. Pernyataan benar tentang reabsorpsi Na+ di tubulus proksimal:",
+    options: [
+      "a. Memerlukan energi ATP",
+      "b. Berdasarkan perbedaan tekanan interstitial",
+      "c. Berdasarkan perbedaan electrochemical gradient",
+      "d. Dengan osmosis biasa",
+      "e. Berdasarkan perbedaan tekanan intraselular"
+    ],
+    answer: 0,
+    explain: "Reabsorpsi Na+ bergantung Na/K-ATPase basolateral (butuh ATP) untuk membentuk gradien."
+  },
+  {
+    q: "67. Jenis inkontinensia yang disebabkan oleh ketidakmampuan fisik untuk mencapai toilet disebut:",
+    options: [
+      "a. Inkontinensia fungsional",
+      "b. Inkontinensia stres",
+      "c. Inkontinensia urgensi",
+      "d. Inkontinensia overflow",
+      "e. Inkontinensia campuran"
+    ],
+    answer: 0,
+    explain: "Functional incontinence: tidak mampu ke toilet karena keterbatasan fisik/kognitif/lingkungan."
+  },
+  {
+    q: "68. Seorang pria muda mengajak teman ceweknya yang mengeluhkan nyeri saat kencing. Setelah anamnesis dan prosedur pemeriksaan dilakukan dokter menyimpulkan sebagai “honeymoon cystitis”. Darah arteriil yang akan disaring menjadi urine berjalan melalui 1. A. segmentalis, 2. A. interlobularis, 3. A. interlobaris, 4. A. arcuata, 5. A. afferent. Urutannya adalah sebagai berikut   :",
+    options: [
+      "a. 1-3-4-2-5",
+      "b. 1-2-3-4-5",
+      "c. 1-4-3-5-2",
+      "d. 1-3-5-4-2",
+      "e. 1-2-4-3-5"
+    ],
+    answer: 0,
+    explain: "Urutan benar: segmental → interlobar → arcuate → interlobular → afferent arteriole."
+  },
+  {
+    q: "72. Pemeriksaan konfirmasi untuk penyakit ginjal:",
+    options: [
+      "a. Elektrolit",
+      "b. Klirens kreatinin",
+      "c. Urinalisis",
+      "d. Ureum",
+      "e. Asam urat"
+    ],
+    answer: 1,
+    explain: "Klirens kreatinin digunakan untuk memperkirakan GFR sebagai konfirmasi fungsi ginjal."
+  },
+  {
+    q: "73.  Parameter kimia urine berikut bermanfaat untuk menunjang dugaan adanya infeksi saluran kemih:",
+    options: [
+      "a. Nitrit",
+      "b. Glukosa",
+      "c. Eritrosit",
+      "d. Bilirubin",
+      "e. Keton"
+    ],
+    answer: 0,
+    explain: "Nitrit (+) menunjang bakteri pengubah nitrat (bakteri Gram-negatif tertentu)."
+  },
+  {
+    q: "75. Karakteristik urinary bladder:",
+    options: [
+      "a. Bagian tengah lapisan ototnya membentuk internal sphincter muscle",
+      "b. Membran sel epitel tidak terdapat region plaque dan interplaque",
+      "c. Internal sphincter muscle terdiri dari otot skelet",
+      "d. Lamina propria terdiri dari banyak kelenjar Littre",
+      "e. Lapisan otot terdiri dari 2 arah otot polos pada bagian 2/3 proksimal"
+    ],
+    answer: 0,
+    explain: "Penebalan lapisan otot sirkular (tengah) di leher buli membentuk sfingter interna (otot polos)."
+  },
+  {
+    q: "76. Data yang diperlukan untuk menghitung eLFG metode Cockcroft–Gault:",
+    options: [
+      "a. Tinggi badan",
+      "b. Berat badan",
+      "c. Kreatinin urine",
+      "d. Volume urine",
+      "e. Luas permukaan tubuh"
+    ],
+    answer: 1,
+    explain: "Cockcroft–Gault menggunakan umur, BB, jenis kelamin, dan kreatinin serum."
+  },
+  {
+    q: "77. Sel apakah yang merupakan modifikasi otot polos pada Juxtaglomerular apparatus?",
+    options: [
+      "a. Interstisial cell",
+      "b. Macula densa",
+      "c. Extraglomerular mesangial cell",
+      "d. Podocyte",
+      "e. Juxtaglomerular cell"
+    ],
+    answer: 4,
+    explain: "Juxtaglomerular (granular) cells adalah modifikasi otot polos arteriol aferen penghasil renin."
+  },
+  {
+    q: "78. Spesimen urin terbaik untuk kultur anaerob:",
+    options: [
+      "a. Urine kateter",
+      "b. Urine clean catch",
+      "c. Urine suprapubic puncture",
+      "d. Urine pancar tengah",
+      "e. Urine urobag"
+    ],
+    answer: 2,
+    explain: "Aspirasi suprapubik meminimalkan kontaminasi dan cocok untuk kultur anaerob."
+  },
+  {
+    q: "83. Plain abdominal film adalah merupakan salah satu modalitas pilihan untuk mengevaluasi kondisi patologis pada system traktus urinarius karena dapat  menunjukkan :",
+    options: [
+      "a. Evaluasi fungsi traktus urinarius",
+      "b. Batu radioopak",
+      "c. Appendicitis akut",
+      "d. Batu radiolusen",
+      "e. Prostat hipertrofi"
+    ],
+    answer: 1,
+    explain: "Foto polos abdomen dapat memperlihatkan batu radioopak (mis. kalsium)."
+  },
+  {
+    q: "85.  Bagian dari saluran sistem urinaria sebagai penampung sementara urine yang dibentuk ginjal adalah:",
+    options: [
+      "a. Vesicula seminalis",
+      "b. Urethra",
+      "c. Pelvis renalis",
+      "d. Vesica urinaria",
+      "e. Ansa of Henle"
+    ],
+    answer: 3,
+    explain: "Vesica urinaria adalah tempat penyimpanan sementara urine sebelum miksi."
+  },
+  {
+    q: "87. Kontraindikasi absolut pemeriksaan intravenous urography:",
+    options: [
+      "a. Peningkatan creatinine",
+      "b. Diabetes mellitus",
+      "c. Pasien hamil",
+      "d. Asma bronchiale",
+      "e. Tumor ginjal"
+    ],
+    answer: 2,
+    explain: "Kehamilan merupakan kontraindikasi karena paparan radiasi dan penggunaan kontras."
+  },
+  {
+    q: "89. Manakah dari berikut ini merupakan pengobatan untuk inkontinensia urin tipe stress:",
+    options: [
+      "a. PTNS",
+      "b. Antimuskarinik",
+      "c. Neuromodulasi sakral",
+      "d. Botox intravesika",
+      "e. Penguatan otot dasar panggul"
+    ],
+    answer: 4,
+    explain: "Terapi lini awal stress incontinence: latihan otot dasar panggul (Kegel)."
+  },
+  {
+    q: "91. Struktur yang terdapat pada medula ginjal adalah:",
+    options: [
+      "a. Cortical column",
+      "b. Renal lobule",
+      "c. Renal corpuscle",
+      "d. Convoluted tubule",
+      "e. Medullary rays"
+    ],
+    answer: 4,
+    explain: "Struktur lurus (collecting ducts/straight tubules) membentuk berkas yang berkaitan dengan area medular (medullary rays)."
+  },
+  {
+    q: "93. ASeorang anak laki- laki umur 7 tahun datang ke UGD anak dengan keluhan demam 5 hari, napsu makan berkurang dan nyeri saat berkemih. Pada pemeriksaan fisik didapatkan temperatur axila 38,5O C, Nadi 110 x/ menit, Respirasi 28x/ menit. Terdapat phimosis. Hasil urinalisis didapat: Specific gravity 1,025, pH: 5,5, Nitrit (+), WBC: 10-20/ hpf.  Pertanyaan: Untuk menegakkan diagnosis pasti pasien tersebut diatas , diperlukan 
+pemeriksan:",
+    options: [
+      "a. Elektrolit urin",
+      "b. Kultur darah",
+      "c. Kultur urin",
+      "d. Pemeriksaan fungsi ginjal",
+      "e. USG abdomen"
+    ],
+    answer: 2,
+    explain: "Konfirmasi ISK adalah kultur urin."
+  },
+  {
+    q: "94. Otoregulasi aliran darah ginjal ke glomerulus terkait dengan:",
+    options: [
+      "a. Kemampuan otot arteriol menahan regangan saat peningkatan tekanan arterial",
+      "b. Pengeluaran renin oleh sel macula densa dan JG",
+      "c. Renin mengubah angiotensinogen menjadi angiotensin",
+      "d. Aldosteron dipengaruhi langsung renin",
+      "e. Hormon parakrin oleh sel arteriol aferen"
+    ],
+    answer: 0,
+    explain: "Autoregulasi utama: mekanisme miogenik arteriol aferen (respon terhadap peregangan/tekanan)."
+  },
+  {
+    q: "95. Inkontinensia urin stres terjadi karena:",
+    options: [
+      "a. Kelemahan sfingter kandung kemih atau dasar panggul",
+      "b. Stres mental berlebihan",
+      "c. Cedera SSP",
+      "d. Peningkatan tonus otot kandung kemih",
+      "e. Detrusor kurang aktif"
+    ],
+    answer: 0,
+    explain: "Stress incontinence: inkompetensi sfingter/dukungan dasar panggul → bocor saat batuk/bersin/aktivitas."
+  },
+  {
+    q: "96. Pernyataan yang benar tentang hipospadia:",
+    options: [
+      "a. Tidak pernah terjadi pada wanita",
+      "b. Meatus uretra di sisi dorsal penis",
+      "c. Paling sering di penoscrotal",
+      "d. Dapat disertai anomali di luar traktus genitourinaria",
+      "e. Preputium kurang berkembang di sisi dorsal"
+    ],
+    answer: 3,
+    explain: "Hipospadia dapat berasosiasi dengan kelainan kongenital lain; meatus berada di sisi ventral."
+  },
+  {
+    q: "97. Pendekatan teknik operasi yang terbaik dalam penanganan testis intra-abdomen adalah:",
+    options: [
+      "a. Skrotal letak tinggi",
+      "b. Intra-skrotal",
+      "c. Inguinal",
+      "d. Umbilikal",
+      "e. Laparoskopi"
+    ],
+    answer: 4,
+    explain: "Testis intraabdomen paling baik dievaluasi dan ditangani dengan laparoskopi."
+  },
+  {
+    q: "100. Seorang anak laki-laki 4 tahun masuk RS dengan keluhan bengkak pada kelopak mata dan kaki, nafsu makan menurun, diare dan sakit perut. Pada pemeriksaan fisik ditemukan tekanan darah penderita dalam batas normal. Terdapat pitting udem pada tungkai bawah. Laboratorium: Urinalisis: proteinuria 4+, darah (-) serum kolesterol 300 mg/dL Pemeriksaan laboratorium lain yang diperlukan untuk menegakkan diagnosis adalah:",
+    options: [
+      "a. LED",
+      "b. C3",
+      "c. Serum albumin",
+      "d. ASTO",
+      "e. Trombosit"
+    ],
+    answer: 2,
+    explain: "Sindrom nefrotik: proteinuria masif + hipoalbuminemia + edema + hiperlipidemia → perlu cek albumin serum."
+  }
+    ];
+
+    let current = 0;
+    let currentOptions = [];
+    let score = 0;
+    let answered = false;
+    let timeLeft = 57 * 60;
+    let timerInterval = null;
+
+    const homeEl = document.getElementById("home");
+    const quizEl = document.getElementById("quizContainer");
+    const metaEl = document.getElementById("meta");
+    const scoreInfoEl = document.getElementById("scoreInfo");
+    const timerInfoEl = document.getElementById("timerInfo");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const explainEl = document.getElementById("explain");
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
+
+    const userAnswers = Array(questions.length).fill(null);
+
+    startBtn.addEventListener("click", startQuiz);
+    nextBtn.addEventListener("click", nextQuestion);
+    backBtn.addEventListener("click", prevQuestion);
+
+    function startQuiz() {
+      homeEl.style.display = "none";
+      quizEl.style.display = "block";
+      current = 0;
+      score = 0;
+      answered = false;
+      timeLeft = 57 * 60;
+      userAnswers.fill(null);
+      startTimer();
+      loadQuestion();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+      const seconds = String(timeLeft % 60).padStart(2, "0");
+      timerInfoEl.innerText = "Timer: " + minutes + ":" + seconds;
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function recalculateScore() {
+      score = userAnswers.reduce((total, answer, index) => {
+        return total + (answer === questions[index].answer ? 1 : 0);
+      }, 0);
+
+      scoreInfoEl.innerText = "Score: " + score;
+    }
+
+    function cleanOptionText(text) {
+      return text.replace(/^[a-e]\.\s*/i, "");
+    }
+
+    function loadQuestion() {
+      answered = userAnswers[current] !== null;
+      explainEl.style.display = "none";
+      explainEl.innerText = "";
+
+      const q = questions[current];
+      metaEl.innerText = "Soal " + (current + 1) + " / " + questions.length;
+      questionEl.innerText = q.q;
+
+      currentOptions = q.options.map((opt, i) => ({
+        text: opt,
+        isCorrect: i === q.answer,
+        originalIndex: i
+      }));
+
+      shuffleArray(currentOptions);
+
+      optionsEl.innerHTML = currentOptions.map((opt, i) => `
+        <label>
+          <input type="radio" name="opt" data-index="${i}">
+          ${String.fromCharCode(65 + i)}. ${cleanOptionText(opt.text)}
+        </label>
+      `).join("");
+
+      const radios = optionsEl.querySelectorAll('input[name="opt"]');
+      const labels = optionsEl.querySelectorAll("label");
+      const savedAnswer = userAnswers[current];
+
+      radios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          check(parseInt(this.dataset.index, 10));
+        });
+      });
+
+      if (savedAnswer !== null) {
+        const selectedIndex = currentOptions.findIndex(
+          (opt) => opt.originalIndex === savedAnswer
+        );
+
+        if (selectedIndex !== -1) {
+          radios[selectedIndex].checked = true;
+
+          labels.forEach((label, index) => {
+            const input = label.querySelector("input");
+            input.disabled = true;
+
+            if (currentOptions[index].isCorrect) {
+              label.classList.add("correct");
+            }
+
+            if (index === selectedIndex && !currentOptions[index].isCorrect) {
+              label.classList.add("wrong");
+            }
+          });
+
+          explainEl.style.display = "block";
+          explainEl.innerText = "Penjelasan: " + questions[current].explain;
+        }
+      }
+
+      backBtn.disabled = current === 0;
+      backBtn.style.opacity = current === 0 ? "0.6" : "1";
+
+      recalculateScore();
+    }
+
+    function check(i) {
+      const labels = optionsEl.querySelectorAll("label");
+      const chosenOriginalIndex = currentOptions[i].originalIndex;
+
+      const previousAnswer = userAnswers[current];
+      userAnswers[current] = chosenOriginalIndex;
+      answered = true;
+
+      labels.forEach((label) => {
+        label.classList.remove("correct", "wrong");
+      });
+
+      labels.forEach((label, index) => {
+        const input = label.querySelector("input");
+        input.disabled = true;
+
+        if (currentOptions[index].isCorrect) {
+          label.classList.add("correct");
+        }
+
+        if (index === i && !currentOptions[index].isCorrect) {
+          label.classList.add("wrong");
+        }
+      });
+
+      if (previousAnswer === null || previousAnswer !== chosenOriginalIndex) {
+        recalculateScore();
+      }
+
+      explainEl.style.display = "block";
+      explainEl.innerText = "Penjelasan: " + questions[current].explain;
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (!answered) return;
+
+      current++;
+
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function finishQuiz() {
+      clearInterval(timerInterval);
+      recalculateScore();
+
+      document.body.innerHTML = `
+        <div class="container result">
+          <div class="result-box">
+            <div class="badge">Quiz Selesai</div>
+            <h2>Hasil Akhir</h2>
+            <div class="score-number">${score}/${questions.length}</div>
+            <p>Semoga CBT juga lancar ya! Exc33ding A!</p>
+            <button class="restart-btn" type="button" onclick="location.reload()">Restart</button>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
+
+
+
+
